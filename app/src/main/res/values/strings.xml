@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Batman Vefat</string>
+    <string name="developer_name">Hakan Sırlan</string>
+    <string name="disclaimer_source">Kaynak: Batman Belediyesi (batman.bel.tr). Bu uygulama resmî bir belediye uygulaması değildir.</string>
+    <string name="offline_banner">Çevrimdışı — Son kaydedilen liste gösteriliyor</string>
+    <string name="site_unreachable_banner">Belediye sitesine şu an ulaşılamıyor, son kaydedilen liste gösteriliyor</string>
+    <string name="empty_records">Kayıt bulunamadı</string>
+    <string name="phone_masked_notice">Numara belediye tarafından gizlenmiştir</string>
+</resources>

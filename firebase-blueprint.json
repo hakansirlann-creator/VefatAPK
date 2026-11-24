@@ -1,0 +1,357 @@
+{
+  "entities": {
+    "ManuelVefat": {
+      "title": "ManuelVefat",
+      "description": "Yönetici tarafından eklenen vefat ve taziye ilanı kaydı.",
+      "type": "object",
+      "properties": {
+        "adSoyad": {
+          "type": "string",
+          "description": "Vefat eden kişinin adı ve soyadı."
+        },
+        "dogumTarihi": {
+          "type": "string",
+          "description": "Doğum tarihi veya yılı."
+        },
+        "dogumYeri": {
+          "type": "string",
+          "description": "Doğum yeri."
+        },
+        "vefatTarihi": {
+          "type": "string",
+          "description": "GG.AA.YYYY biçiminde vefat tarihi."
+        },
+        "vefatTarihiIso": {
+          "type": "string",
+          "description": "Sıralama için YYYY-MM-DD biçiminde vefat tarihi."
+        },
+        "definYeri": {
+          "type": "string",
+          "description": "Mezarlık veya defin yeri."
+        },
+        "definTarihi": {
+          "type": "string",
+          "description": "Defin tarihi."
+        },
+        "cenazeYakini": {
+          "type": "string",
+          "description": "Cenaze yakını adı soyadı."
+        },
+        "yakinTelefonu": {
+          "type": "string",
+          "description": "Cenaze yakınının telefon numarası."
+        },
+        "taziyeYeri": {
+          "type": "string",
+          "description": "Taziye evi adı."
+        },
+        "taziyeTarihi": {
+          "type": "string",
+          "description": "Taziye tarih aralığı."
+        },
+        "yayinda": {
+          "type": "boolean",
+          "description": "Kaydın herkese açık listede görünüp görünmeyeceği."
+        },
+        "ekleyenUid": {
+          "type": "string",
+          "description": "Kaydı ekleyen yöneticinin kullanıcı kimliği."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Sunucu oluşturma zamanı (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Sunucu güncelleme zamanı (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "adSoyad",
+        "vefatTarihi",
+        "vefatTarihiIso",
+        "yayinda",
+        "ekleyenUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "BelediyeCache": {
+      "title": "BelediyeCache",
+      "description": "Batman Belediyesi vefat listesi için 5 dakikalık paylaşımlı önbellek belgesi.",
+      "type": "object",
+      "properties": {
+        "kayitlar": {
+          "type": "array",
+          "description": "Belediye sayfasından ayrıştırılan vefat kayıtları listesi."
+        },
+        "guncellenmeZamaniMs": {
+          "type": "integer",
+          "description": "Son güncellemenin milisaniye cinsinden zaman damgası."
+        },
+        "guncelleyenUid": {
+          "type": "string",
+          "description": "Önbelleği güncelleyen kullanıcının kimliği."
+        },
+        "kaynak": {
+          "type": "string",
+          "description": "Veri kaynağı adı."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Sunucu güncelleme zamanı (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "kayitlar",
+        "guncellenmeZamaniMs",
+        "guncelleyenUid",
+        "kaynak",
+        "updatedAt"
+      ]
+    },
+    "ReklamAyari": {
+      "title": "ReklamAyari",
+      "description": "Ana ekrandaki anlık güncellenen reklam alanı yapılandırması.",
+      "type": "object",
+      "properties": {
+        "aktif": {
+          "type": "boolean",
+          "description": "Reklam alanının görünür olup olmadığı."
+        },
+        "baslik": {
+          "type": "string",
+          "description": "Reklam başlığı."
+        },
+        "metin": {
+          "type": "string",
+          "description": "Reklam açıklaması."
+        },
+        "gorselUrl": {
+          "type": "string",
+          "description": "İsteğe bağlı reklam görseli bağlantısı."
+        },
+        "telefon": {
+          "type": "string",
+          "description": "İsteğe bağlı telefon numarası."
+        },
+        "linkUrl": {
+          "type": "string",
+          "description": "İsteğe bağlı web sayfası bağlantısı."
+        },
+        "arkaPlanRengi": {
+          "type": "string",
+          "description": "Onaltılık renk kodu."
+        },
+        "guncelleyenUid": {
+          "type": "string",
+          "description": "Reklamı güncelleyen yöneticinin kimliği."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Sunucu güncelleme zamanı (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "aktif",
+        "baslik",
+        "metin",
+        "arkaPlanRengi",
+        "guncelleyenUid",
+        "updatedAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Yönetici kullanıcı yetki belgesi.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Yönetici e-posta adresi."
+        }
+      },
+      "required": ["email"]
+    },
+    "VefatBildirim": {
+      "title": "VefatBildirim",
+      "description": "Yönetici tarafından tüm kullanıcılara gönderilen vefat bildirimi.",
+      "type": "object",
+      "properties": {
+        "baslik": {
+          "type": "string",
+          "description": "Bildirim başlığı."
+        },
+        "mesaj": {
+          "type": "string",
+          "description": "Bildirim mesajı."
+        },
+        "adSoyad": {
+          "type": "string",
+          "description": "Vefat eden kişinin adı soyadı."
+        },
+        "vefatKayitId": {
+          "type": "string",
+          "description": "İlgili vefat kaydı kimliği."
+        },
+        "yayinda": {
+          "type": "boolean",
+          "description": "Bildirimin aktif olup olmadığı."
+        },
+        "olusturmaMs": {
+          "type": "integer",
+          "description": "Bildirim oluşturulma zamanı (epoch ms)."
+        },
+        "gonderenUid": {
+          "type": "string",
+          "description": "Bildirimi gönderen yöneticinin kimliği."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Sunucu zaman damgası (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["baslik", "mesaj", "adSoyad", "yayinda", "olusturmaMs", "gonderenUid", "createdAt"]
+    },
+    "KullaniciKaydi": {
+      "title": "KullaniciKaydi",
+      "description": "Uygulamaya Google hesabıyla giriş yapan kullanıcı profili ve anlık aktiflik durumu.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth kullanıcı kimliği."
+        },
+        "email": {
+          "type": "string",
+          "description": "Google e-posta adresi."
+        },
+        "adSoyad": {
+          "type": "string",
+          "description": "Google hesap görünen adı."
+        },
+        "cihaz": {
+          "type": "string",
+          "description": "Cihaz marka ve modeli."
+        },
+        "aktif": {
+          "type": "boolean",
+          "description": "Kullanıcının şu an uygulamada aktif olup olmadığı."
+        },
+        "ilkGirisMs": {
+          "type": "integer",
+          "description": "İlk kurulum/giriş zamanı (epoch ms)."
+        },
+        "sonGirisMs": {
+          "type": "integer",
+          "description": "Son giriş zamanı (epoch ms)."
+        },
+        "sonAktifMs": {
+          "type": "integer",
+          "description": "Son aktif kalp atışı zamanı (epoch ms)."
+        },
+        "girisSayisi": {
+          "type": "integer",
+          "description": "Toplam oturum açma sayısı."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "İlk kayıt sunucu zamanı."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Son güncelleme sunucu zamanı."
+        }
+      },
+      "required": ["uid", "aktif", "ilkGirisMs", "sonGirisMs", "sonAktifMs", "girisSayisi", "createdAt", "updatedAt"]
+    },
+    "GirisLogu": {
+      "title": "GirisLogu",
+      "description": "Google giriş ve oturum açma log kaydı (yalnızca yönetici tarafından okunabilir).",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Giriş yapan kullanıcının kimliği."
+        },
+        "email": {
+          "type": "string",
+          "description": "Google e-posta adresi."
+        },
+        "adSoyad": {
+          "type": "string",
+          "description": "Google hesap adı soyadı."
+        },
+        "cihaz": {
+          "type": "string",
+          "description": "Cihaz modeli."
+        },
+        "olay": {
+          "type": "string",
+          "description": "Olay türü (GOOGLE_GIRIS veya OTURUM_ACILDI)."
+        },
+        "zamanMs": {
+          "type": "integer",
+          "description": "Olay zamanı (epoch ms)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Sunucu kayıt zamanı."
+        }
+      },
+      "required": ["uid", "olay", "zamanMs", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/manuel_vefat/{kayitId}": {
+      "schema": {
+        "$ref": "#/entities/ManuelVefat"
+      },
+      "description": "Yönetici tarafından eklenen manuel vefat ilanları."
+    },
+    "/cache/{docId}": {
+      "schema": {
+        "$ref": "#/entities/BelediyeCache"
+      },
+      "description": "Belediye vefat listesi paylaşımlı önbelleği (cache/belediye)."
+    },
+    "/ayarlar/{docId}": {
+      "schema": {
+        "$ref": "#/entities/ReklamAyari"
+      },
+      "description": "Uygulama ayarları ve anlık reklam belgesi (ayarlar/reklam)."
+    },
+    "/admins/{uid}": {
+      "schema": {
+        "$ref": "#/entities/AdminRecord"
+      },
+      "description": "Yönetici UID kayıtları."
+    },
+    "/bildirimler/{bildirimId}": {
+      "schema": {
+        "$ref": "#/entities/VefatBildirim"
+      },
+      "description": "Tüm kullanıcılara anlık iletilen vefat duyuru bildirimleri."
+    },
+    "/kullanicilar/{uid}": {
+      "schema": {
+        "$ref": "#/entities/KullaniciKaydi"
+      },
+      "description": "Kayıtlı kullanıcılar ve anlık aktiflik durumu (listeleme yalnızca yöneticiye açık)."
+    },
+    "/giris_loglari/{logId}": {
+      "schema": {
+        "$ref": "#/entities/GirisLogu"
+      },
+      "description": "Google giriş log kayıtları (yalnızca yönetici okuyabilir)."
+    }
+  }
+}

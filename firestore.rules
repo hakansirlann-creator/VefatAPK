@@ -1,0 +1,228 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (
+          request.auth.token.email_verified == true &&
+          (
+            request.auth.token.email == 'hakansirlann@gmail.com' ||
+            request.auth.token.email == 'hakan@batmanvefat.app'
+          )
+        ) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidOptionalString(data, key, maxLen) {
+      return !(key in data) || data[key] == null || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    function isValidManuelVefat(data) {
+      return data.adSoyad is string && data.adSoyad.size() >= 2 && data.adSoyad.size() <= 120 &&
+             data.vefatTarihi is string && data.vefatTarihi.size() >= 4 && data.vefatTarihi.size() <= 20 &&
+             data.vefatTarihiIso is string && data.vefatTarihiIso.size() >= 4 && data.vefatTarihiIso.size() <= 20 &&
+             data.yayinda is bool &&
+             data.ekleyenUid is string && data.ekleyenUid.size() >= 1 && data.ekleyenUid.size() <= 128 &&
+             isValidOptionalString(data, 'dogumTarihi', 30) &&
+             isValidOptionalString(data, 'dogumYeri', 80) &&
+             isValidOptionalString(data, 'definYeri', 120) &&
+             isValidOptionalString(data, 'definTarihi', 40) &&
+             isValidOptionalString(data, 'cenazeYakini', 100) &&
+             isValidOptionalString(data, 'yakinTelefonu', 30) &&
+             isValidOptionalString(data, 'taziyeYeri', 120) &&
+             isValidOptionalString(data, 'taziyeTarihi', 60);
+    }
+
+    function isValidBelediyeCache(data) {
+      return data.kayitlar is list && data.kayitlar.size() <= 150 &&
+             (data.kayitlar.size() == 0 || data.kayitlar[0] is map) &&
+             data.guncellenmeZamaniMs is int && data.guncellenmeZamaniMs >= 0 &&
+             data.guncelleyenUid is string && data.guncelleyenUid.size() >= 1 && data.guncelleyenUid.size() <= 128 &&
+             data.kaynak is string && data.kaynak.size() >= 1 && data.kaynak.size() <= 100;
+    }
+
+    function isValidReklam(data) {
+      return data.aktif is bool &&
+             data.baslik is string && data.baslik.size() <= 100 &&
+             data.metin is string && data.metin.size() <= 240 &&
+             data.arkaPlanRengi is string && data.arkaPlanRengi.size() >= 4 && data.arkaPlanRengi.size() <= 20 &&
+             data.guncelleyenUid is string && data.guncelleyenUid.size() >= 1 && data.guncelleyenUid.size() <= 128 &&
+             isValidOptionalString(data, 'gorselUrl', 500) &&
+             isValidOptionalString(data, 'telefon', 30) &&
+             isValidOptionalString(data, 'linkUrl', 500);
+    }
+
+    function isValidBildirim(data) {
+      return data.baslik is string && data.baslik.size() >= 1 && data.baslik.size() <= 120 &&
+             data.mesaj is string && data.mesaj.size() >= 1 && data.mesaj.size() <= 300 &&
+             data.adSoyad is string && data.adSoyad.size() <= 120 &&
+             data.yayinda is bool &&
+             data.olusturmaMs is int && data.olusturmaMs >= 0 &&
+             data.gonderenUid is string && data.gonderenUid.size() >= 1 && data.gonderenUid.size() <= 128 &&
+             isValidOptionalString(data, 'vefatKayitId', 128);
+    }
+
+    function isValidKullanici(data) {
+      return data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+             data.aktif is bool &&
+             data.ilkGirisMs is int && data.ilkGirisMs >= 0 &&
+             data.sonGirisMs is int && data.sonGirisMs >= 0 &&
+             data.sonAktifMs is int && data.sonAktifMs >= 0 &&
+             data.girisSayisi is int && data.girisSayisi >= 1 &&
+             isValidOptionalString(data, 'email', 160) &&
+             isValidOptionalString(data, 'adSoyad', 120) &&
+             isValidOptionalString(data, 'cihaz', 80);
+    }
+
+    function isValidGirisLog(data) {
+      return data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+             data.olay is string && data.olay.size() >= 1 && data.olay.size() <= 40 &&
+             data.zamanMs is int && data.zamanMs >= 0 &&
+             isValidOptionalString(data, 'email', 160) &&
+             isValidOptionalString(data, 'adSoyad', 120) &&
+             isValidOptionalString(data, 'cihaz', 80);
+    }
+
+    match /manuel_vefat/{kayitId} {
+      allow get: if isSignedIn() && isValidId(kayitId) && (resource.data.yayinda == true || isAdmin());
+      allow list: if isSignedIn() && (resource.data.yayinda == true || isAdmin());
+
+      allow create: if isSignedIn() &&
+                       isValidId(kayitId) &&
+                       incoming().keys().hasAll(['adSoyad', 'vefatTarihi', 'vefatTarihiIso', 'yayinda', 'ekleyenUid', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['adSoyad', 'dogumTarihi', 'dogumYeri', 'vefatTarihi', 'vefatTarihiIso', 'definYeri', 'definTarihi', 'cenazeYakini', 'yakinTelefonu', 'taziyeYeri', 'taziyeTarihi', 'yayinda', 'ekleyenUid', 'createdAt', 'updatedAt']) &&
+                       incoming().ekleyenUid == request.auth.uid &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                       incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                       isValidManuelVefat(incoming()) &&
+                       isAdmin();
+
+      allow update: if isSignedIn() &&
+                       isValidId(kayitId) &&
+                       isValidManuelVefat(incoming()) &&
+                       isAdmin() &&
+                       incoming().ekleyenUid == existing().ekleyenUid &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['adSoyad', 'dogumTarihi', 'dogumYeri', 'vefatTarihi', 'vefatTarihiIso', 'definYeri', 'definTarihi', 'cenazeYakini', 'yakinTelefonu', 'taziyeYeri', 'taziyeTarihi', 'yayinda', 'updatedAt']);
+
+      allow delete: if isSignedIn() && isValidId(kayitId) && isAdmin();
+    }
+
+    match /cache/{docId} {
+      allow get: if isSignedIn() && docId == 'belediye';
+      allow list: if false;
+
+      allow create, update: if isSignedIn() &&
+                               docId == 'belediye' &&
+                               incoming().keys().hasAll(['kayitlar', 'guncellenmeZamaniMs', 'guncelleyenUid', 'kaynak', 'updatedAt']) &&
+                               incoming().keys().hasOnly(['kayitlar', 'guncellenmeZamaniMs', 'guncelleyenUid', 'kaynak', 'updatedAt']) &&
+                               incoming().guncelleyenUid == request.auth.uid &&
+                               incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                               isValidBelediyeCache(incoming());
+
+      allow delete: if false;
+    }
+
+    match /ayarlar/{docId} {
+      allow get: if isSignedIn() && docId == 'reklam';
+      allow list: if false;
+
+      allow create, update: if isSignedIn() &&
+                               docId == 'reklam' &&
+                               incoming().keys().hasAll(['aktif', 'baslik', 'metin', 'arkaPlanRengi', 'guncelleyenUid', 'updatedAt']) &&
+                               incoming().keys().hasOnly(['aktif', 'baslik', 'metin', 'gorselUrl', 'telefon', 'linkUrl', 'arkaPlanRengi', 'guncelleyenUid', 'updatedAt']) &&
+                               incoming().guncelleyenUid == request.auth.uid &&
+                               incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                               isValidReklam(incoming()) &&
+                               isAdmin();
+
+      allow delete: if false;
+    }
+
+    match /admins/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    match /bildirimler/{bildirimId} {
+      allow get: if isSignedIn() && isValidId(bildirimId) && (resource.data.yayinda == true || isAdmin());
+      allow list: if isSignedIn() && (resource.data.yayinda == true || isAdmin());
+
+      allow create: if isSignedIn() &&
+                       isValidId(bildirimId) &&
+                       incoming().keys().hasAll(['baslik', 'mesaj', 'adSoyad', 'yayinda', 'olusturmaMs', 'gonderenUid', 'createdAt']) &&
+                       incoming().keys().hasOnly(['baslik', 'mesaj', 'adSoyad', 'vefatKayitId', 'yayinda', 'olusturmaMs', 'gonderenUid', 'createdAt']) &&
+                       incoming().gonderenUid == request.auth.uid &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                       isValidBildirim(incoming()) &&
+                       isAdmin();
+
+      allow update: if false;
+      allow delete: if isSignedIn() && isValidId(bildirimId) && isAdmin();
+    }
+
+    match /kullanicilar/{uid} {
+      allow get: if isSignedIn() && isValidId(uid) && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn() &&
+                       isValidId(uid) &&
+                       request.auth.uid == uid &&
+                       incoming().uid == request.auth.uid &&
+                       incoming().keys().hasAll(['uid', 'aktif', 'ilkGirisMs', 'sonGirisMs', 'sonAktifMs', 'girisSayisi', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['uid', 'email', 'adSoyad', 'cihaz', 'aktif', 'ilkGirisMs', 'sonGirisMs', 'sonAktifMs', 'girisSayisi', 'createdAt', 'updatedAt']) &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                       incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                       isValidKullanici(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(uid) &&
+                       request.auth.uid == uid &&
+                       incoming().uid == existing().uid &&
+                       incoming().ilkGirisMs == existing().ilkGirisMs &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                       isValidKullanici(incoming()) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['email', 'adSoyad', 'cihaz', 'aktif', 'sonGirisMs', 'sonAktifMs', 'girisSayisi', 'updatedAt']);
+
+      allow delete: if false;
+    }
+
+    match /giris_loglari/{logId} {
+      allow get, list: if isAdmin();
+
+      allow create: if isSignedIn() &&
+                       isValidId(logId) &&
+                       incoming().uid == request.auth.uid &&
+                       incoming().keys().hasAll(['uid', 'olay', 'zamanMs', 'createdAt']) &&
+                       incoming().keys().hasOnly(['uid', 'email', 'adSoyad', 'cihaz', 'olay', 'zamanMs', 'createdAt']) &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                       isValidGirisLog(incoming());
+
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+  }
+}

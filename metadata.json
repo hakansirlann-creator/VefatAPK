@@ -1,0 +1,6 @@
+{
+  "name": "Batman Vefat",
+  "description": "Batman vefat ilanları, taziye evi ve mezarlık yol tarifi uygulaması. Geliştirici: Hakan Sırlan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
